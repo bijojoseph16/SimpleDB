@@ -1,0 +1,10 @@
+/BadSyntaxException.class
+/CreateIndexData.class
+/CreateTableData.class
+/CreateViewData.class
+/DeleteData.class
+/InsertData.class
+/Lexer.class
+/ModifyData.class
+/Parser.class
+/QueryData.class
