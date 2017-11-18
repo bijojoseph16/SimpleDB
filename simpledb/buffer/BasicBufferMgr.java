@@ -12,7 +12,7 @@ class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
    //Edits
-   private HashMap<String, Buffer> bufferPoolMap = new HashMap<String, Buffer>();
+   private HashMap<Block, Buffer> bufferPoolMap = new HashMap<Block, Buffer>();
    private int totalBuffers;
    /**
     * Creates a buffer manager having the specified number 
@@ -107,14 +107,23 @@ class BasicBufferMgr {
    }
    
    private Buffer findExistingBuffer(Block blk) {
+       /*
       for (Buffer buff : bufferpool) {
          Block b = buff.block();
          if (b != null && b.equals(blk))
             return buff;
       }
       return null;
+      */
      //Edit
-     // return bufferPoolMap.get(blk.fileName() + "." + blk.number()); 
+     //Return the block requested, if it is present in the
+     //buffer pool.
+     if(bufferPoolMap.containsKey(blk)) {
+         return bufferPoolMap.get(blk);
+     }
+     else {
+         return null;
+     }
    }
    
    private Buffer chooseUnpinnedBuffer() {
