@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compiled class file
 *.class
 
@@ -22,6 +23,8 @@
 hs_err_pid*
 
 
+=======
+>>>>>>> b114cc2a3cf1b54b409b20e569e26a815f79ae65
 .metadata
 bin/
 tmp/
