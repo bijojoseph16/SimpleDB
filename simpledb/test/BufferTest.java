@@ -34,7 +34,7 @@ public class BufferTest {
         new SimpleDB();
         BufferMgr basicBufferMgr = SimpleDB.bufferMgr();
         
-        /*
+        /*Test Secanrio 1
         //Test1 for LRU2
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
         System.out.println("Create 4 Blocks");
@@ -98,6 +98,7 @@ public class BufferTest {
         System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
         */
 
+        //Test Secanrio 2
         //Test1 for LRU2 test if the the queue which
         //holds the timestamp is being updated
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
@@ -183,6 +184,7 @@ public class BufferTest {
         System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
 
         /*
+        //Test Secanrio 3
         //Test2 algorithm should use LRU
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
         System.out.println("Create 4 Blocks");
@@ -242,12 +244,13 @@ public class BufferTest {
         System.out.println("Buffer pool after clearing");
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
-        System.out.println("----------Buffer Test Scenario 2 Run Complete----------");
+        System.out.println("----------Buffer Test Scenario 3 Run Complete----------");
         */
         
         
         
         /*
+        //Test Secanrio 4
         //Algorithm should default to LRU as there are 2 buffers 
         //with infinite LRU2 distance
         //Only use 1 to 10
@@ -397,6 +400,7 @@ public class BufferTest {
         */
 
         /*
+        //Test Secanrio 5
         //Test2 for LRU2 first LRU2 is used to remove
         //a buffer then the newly added block is unpinned
         //so as per LRU2, this block will have infinite
@@ -582,7 +586,7 @@ public class BufferTest {
         System.out.println("Buffer pool after clearing");
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
-        System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
+        System.out.println("----------Buffer Test Scenario 5 Run Complete----------");
         */
 
         System.out.println("TearDown");
