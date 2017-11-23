@@ -98,6 +98,7 @@ class BasicBufferMgr {
         
         buff.pin();
         BufferInfo bufferInfo = bufferPoolMap.get(blk);
+        bufferPoolMap.remove(buff.block());
         bufferInfo.addTimestamp(System.currentTimeMillis());
         bufferPoolMap.put(blk, bufferInfo);
         return buff;

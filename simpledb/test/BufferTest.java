@@ -121,7 +121,7 @@ public class BufferTest {
             Block block = blocks[i];
             System.out.println("\tPinning Block " + block);
             Buffer buffer = basicBufferMgr.pin(block);
-            TimeUnit.SECONDS.sleep(1);
+            //TimeUnit.SECONDS.sleep(1);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
         }
@@ -129,7 +129,7 @@ public class BufferTest {
             Block block = blocks[i];
             System.out.println("\tPinning Block " + block);
             Buffer buffer = basicBufferMgr.pin(block);
-            TimeUnit.SECONDS.sleep(1);
+            //TimeUnit.SECONDS.sleep(1);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
         }
@@ -138,7 +138,7 @@ public class BufferTest {
             Block block = blocks[i];
             System.out.println("\tPinning Block " + block);
             Buffer buffer = basicBufferMgr.pin(block);
-            TimeUnit.SECONDS.sleep(1);
+            //TimeUnit.SECONDS.sleep(1);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
         }
@@ -146,7 +146,7 @@ public class BufferTest {
             Block block = blocks[i];
             System.out.println("\tPinning Block " + block);
             Buffer buffer = basicBufferMgr.pin(block);
-            TimeUnit.SECONDS.sleep(1);
+            //TimeUnit.SECONDS.sleep(1);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
         }
