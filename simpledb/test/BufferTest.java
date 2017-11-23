@@ -313,7 +313,7 @@ public class BufferTest {
         */
 
         
-        //Test2 for LRU2 + LRU first LRU2 is used to remove
+        //Test2 for LRU2 first LRU2 is used to remove
         //a buffer then the newly added block is unpinned
         //so as per LRU2, this block will have infinite
         //LRU2 distance, and is removed.
