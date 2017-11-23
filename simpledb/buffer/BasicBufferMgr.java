@@ -99,6 +99,7 @@ class BasicBufferMgr {
         buff.pin();
         BufferInfo bufferInfo = bufferPoolMap.get(blk);
         bufferInfo.addTimestamp(System.currentTimeMillis());
+        bufferPoolMap.put(blk, bufferInfo);
         return buff;
       }
       
@@ -206,6 +207,7 @@ class BasicBufferMgr {
            for(int i = 0; i < unpinnedBufferInfoList.size(); i++) {
                BufferInfo bufferInfo = unpinnedBufferInfoList.get(i);
                List<Long> timestamps = bufferInfo.getTimestamps();
+               //System.out.println(timestamps.toString());
                if(timestamps.size() < 2) {
                    numInfinity++;
                    bufferInfoIndex = i;
@@ -314,11 +316,12 @@ class BasicBufferMgr {
            this.buffer = buffer;
        }
        private void addTimestamp(Long timestamp) {
-           if(timestamps.size() < 2) {
+           if(timestamps.size() == 2) {
+               timestamps.remove();
                timestamps.add(timestamp);
            }
            else {
-               timestamps.remove();
+               
                timestamps.add(timestamp);
            }
        }

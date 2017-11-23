@@ -98,6 +98,90 @@ public class BufferTest {
         System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
         */
 
+        //Test1 for LRU2 test if the the queue which
+        //holds the timestamp is being updated
+        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        System.out.println("Create 4 Blocks");
+        Block[] blocks = new Block[4];
+        
+        //Only use 0 to 3
+        for(int i = 0; i < 4 ; i++) {
+            System.out.println("Creating Block " + (i));
+            blocks[i] = new Block("filename", i);
+        }
+
+        System.out.println("Initial State of Buffer Pool:");
+        printBufferPool(basicBufferMgr);
+        
+        System.out.println("Now pin 3 Blocks");
+        Buffer[] buffers = new Buffer[3];
+
+        for (int i = 0; i < 3; i++) {
+            Block block = blocks[i];
+            System.out.println("\tPinning Block " + block);
+            Buffer buffer = basicBufferMgr.pin(block);
+            TimeUnit.SECONDS.sleep(1);
+            System.out.println("\tBlock Pinned to Buffer " + buffer);
+            buffers[i] = buffer;
+        }
+        for (int i = 0; i < 3; i++) {
+            Block block = blocks[i];
+            System.out.println("\tPinning Block " + block);
+            Buffer buffer = basicBufferMgr.pin(block);
+            TimeUnit.SECONDS.sleep(1);
+            System.out.println("\tBlock Pinned to Buffer " + buffer);
+            buffers[i] = buffer;
+        }
+        
+        for (int i = 2; i >= 0; i--) {
+            Block block = blocks[i];
+            System.out.println("\tPinning Block " + block);
+            Buffer buffer = basicBufferMgr.pin(block);
+            TimeUnit.SECONDS.sleep(1);
+            System.out.println("\tBlock Pinned to Buffer " + buffer);
+            buffers[i] = buffer;
+        }
+        for (int i = 2; i >= 0; i--) {
+            Block block = blocks[i];
+            System.out.println("\tPinning Block " + block);
+            Buffer buffer = basicBufferMgr.pin(block);
+            TimeUnit.SECONDS.sleep(1);
+            System.out.println("\tBlock Pinned to Buffer " + buffer);
+            buffers[i] = buffer;
+        }
+
+
+        System.out.println("Buffer Pool after setting 3 blocks");
+        printBufferPool(basicBufferMgr);
+        
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 3; j++) {
+                System.out.println("Unpining Blocks");
+                System.out.println("\tUnpining Block "+j);
+                basicBufferMgr.unpin(buffers[j]);                
+            }
+        }
+
+        System.out.println("Buffer Pool after unpinning blocks :");
+        printBufferPool(basicBufferMgr);
+
+        System.out.println("Pinning new Block 3");
+        basicBufferMgr.pin(blocks[3]);
+        System.out.println("Buffer Pool after pinning new block 3:");
+        printBufferPool(basicBufferMgr);
+
+        if(!basicBufferMgr.getBufferPoolMap().containsKey(blocks[2])) {
+            System.out.println("As per LRU2 block 2 has been removed");
+        }
+        if(basicBufferMgr.getBufferPoolMap().containsKey(blocks[3])) {
+            System.out.println("Block 3 has been added");
+        }
+        basicBufferMgr.clearBufferPoolMap();
+        System.out.println("Buffer pool after clearing");
+        printBufferPool(basicBufferMgr);
+        //TODO: We also need to reset the numAvailable Flag here.
+        System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
+
         /*
         //Test2 algorithm should use LRU
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
@@ -312,7 +396,7 @@ public class BufferTest {
         System.out.println("----------Buffer Test Scenario 4 Run Complete----------");
         */
 
-        
+        /*
         //Test2 for LRU2 first LRU2 is used to remove
         //a buffer then the newly added block is unpinned
         //so as per LRU2, this block will have infinite
@@ -499,7 +583,7 @@ public class BufferTest {
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
         System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
-       
+        */
 
         System.out.println("TearDown");
         reg.unbind(BINDING_NAME);
