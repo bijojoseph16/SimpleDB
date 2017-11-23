@@ -1,5 +1,9 @@
 package simpledb.buffer;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import simpledb.buffer.BasicBufferMgr.BufferInfo;
 import simpledb.file.*;
 
 /**
@@ -121,4 +125,21 @@ public class BufferMgr {
    private boolean waitingTooLong(long starttime) {
       return System.currentTimeMillis() - starttime > MAX_TIME;
    }
+   
+   /*
+    * Return the mapping of blk to buffer
+    * Used during testing to check if mapping
+    * is correct
+    */
+   public Map<Block, Buffer> getBufferPoolMap() {
+       return bufferMgr.getBufferPoolMap();
+   }
+
+   /*
+    * Clear the buffer pool 
+    */
+   public void clearBufferPoolMap() {
+       bufferMgr.clearBufferPoolMap();
+   }
+
 }
