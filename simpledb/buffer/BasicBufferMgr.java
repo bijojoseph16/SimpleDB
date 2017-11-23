@@ -204,7 +204,7 @@ class BasicBufferMgr {
        
        if(unpinnedBufferInfoList.size() > 0) {
            for(int i = 0; i < unpinnedBufferInfoList.size(); i++) {
-               BufferInfo bufferInfo = unpinnedBufferInfoList.get(0);
+               BufferInfo bufferInfo = unpinnedBufferInfoList.get(i);
                List<Long> timestamps = bufferInfo.getTimestamps();
                if(timestamps.size() < 2) {
                    numInfinity++;
