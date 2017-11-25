@@ -177,7 +177,6 @@ class BasicBufferMgr {
       */
        
       //Edits
-   
       if(numAvailable > 0) {
           if(bufferPoolMap.size() < bufferPoolSize) {
               Buffer buffer = new Buffer();
@@ -192,6 +191,7 @@ class BasicBufferMgr {
           throw new BufferAbortException();
       }
    }
+   
    public Buffer LRU2() throws BufferAbortException{
        int numInfinity = 0;
        int bufferInfoIndex = -1;
@@ -255,6 +255,7 @@ class BasicBufferMgr {
            throw new BufferAbortException();
        }
    }
+   
    /*
     * @bufferInfoIndex - index of buffer to be replaced
     * 
@@ -300,6 +301,33 @@ class BasicBufferMgr {
        bufferPoolMap.clear();
    }
 
+   //Edit
+   /*
+    * Determines whether the map has a mapping
+    * from the block to some buffer 
+    * @param blk the block to use as key
+    * @return true if there is a mapping
+    */
+   public boolean containsMapping(Block blk) {
+       return bufferPoolMap.containsKey(blk);
+   }
+   
+   /*
+    * Returns the buffer the map maps the
+    * specified block to
+    * @param blk the block to use as key
+    * @return the buffer mapped to it otherwise null;
+    */
+   public Buffer getMapping(Block blk) {
+       if(containsMapping(blk)) {
+         BufferInfo bufferInfo = bufferPoolMap.get(blk);
+         Buffer buffer = bufferInfo.getBuffer();
+         return buffer;
+       }
+       return null;
+   }
+   //End Edit
+   
    /*
     * Class that has the buffer
     * and also the timestamp of last and

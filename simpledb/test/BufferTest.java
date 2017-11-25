@@ -34,7 +34,7 @@ public class BufferTest {
         new SimpleDB();
         BufferMgr basicBufferMgr = SimpleDB.bufferMgr();
         
-        /*Test Secanrio 1
+        //Test Secanrio 1
         //Test1 for LRU2
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
         System.out.println("Create 4 Blocks");
@@ -58,7 +58,6 @@ public class BufferTest {
             Buffer buffer = basicBufferMgr.pin(block);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
-            TimeUnit.SECONDS.sleep(1);
         }
 
         System.out.println("Buffer Pool after setting 3 blocks");
@@ -79,25 +78,33 @@ public class BufferTest {
         printBufferPool(basicBufferMgr);
 
         System.out.println("Pinning new Block 3");
-        basicBufferMgr.pin(blocks[3]);
-        System.out.println("Now we have 2 unpinned buffers available.");
-        
+        basicBufferMgr.pin(blocks[3]);        
         System.out.println("Buffer Pool after pinning new block 3:");
         printBufferPool(basicBufferMgr);
 
+        System.out.println("Now we have 2 unpinned buffers available, both have LRU2 infinity.");
+        System.out.println("As per LRU2 block 0 should be removed");
         if(!basicBufferMgr.getBufferPoolMap().containsKey(blocks[0])) {
-            System.out.println("As per LRU2 block 0 has been removed");
+            System.out.println("As per LRU2 block 0 has been removed: Test Pass");
         }
+        else {
+            System.out.println("As per LRU2 block 0 has not been removed: Test Fail");
+        }
+        System.out.println("Block 3 should have been added");
         if(basicBufferMgr.getBufferPoolMap().containsKey(blocks[3])) {
-            System.out.println("Block 3 has been added");
+            System.out.println("Block 3 has been added: Test Pass");
+        }
+        else {
+            System.out.println("Block 3 has not been added: Test Fail");
         }
         basicBufferMgr.clearBufferPoolMap();
         System.out.println("Buffer pool after clearing");
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
         System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
-        */
+        
 
+        /*
         //Test Secanrio 2
         //Test1 for LRU2 test if the the queue which
         //holds the timestamp is being updated
@@ -181,8 +188,9 @@ public class BufferTest {
         System.out.println("Buffer pool after clearing");
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
-        System.out.println("----------Buffer Test Scenario 1 Run Complete----------");
-
+        System.out.println("----------Buffer Test Scenario 2 Run Complete----------");
+        */
+        
         /*
         //Test Secanrio 3
         //Test2 algorithm should use LRU
@@ -250,7 +258,7 @@ public class BufferTest {
         
         
         /*
-        //Test Secanrio 4
+        //Test Secanrio 3
         //Algorithm should default to LRU as there are 2 buffers 
         //with infinite LRU2 distance
         //Only use 1 to 10
@@ -333,7 +341,7 @@ public class BufferTest {
         System.out.println("Buffer Pool after unpinning blocks :");
         printBufferPool(basicBufferMgr);
 
-        System.out.println("Pinning new Block 8");
+        System.out.println("Pinning new Block 9");
         basicBufferMgr.pin(blocks[9]);
         System.out.println("Now we have 6 unpinned buffers available.");
         System.out.println("There will be more than 1 buffer with LRU2 = infinity.");
@@ -353,6 +361,7 @@ public class BufferTest {
         */
         
         /*
+        //Test Scenario 4
         //Test1 for BufferAbort Exception
         //Make change in SimpleDB.java, BUFFER_SIZE = 3;
         System.out.println("Create 4 Blocks");
@@ -589,6 +598,63 @@ public class BufferTest {
         System.out.println("----------Buffer Test Scenario 5 Run Complete----------");
         */
 
+        /*
+        //Test Secanrio 6
+        //Test bufferPoolMap 
+        //If a mapping exits between block and buffer show the it
+        //Else print no mapping exits
+        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        System.out.println("Create 4 Blocks");
+        Block[] blocks = new Block[4];
+        
+        //Only use 0 to 3
+        for(int i = 0; i < 4 ; i++) {
+            System.out.println("Creating Block " + (i));
+            blocks[i] = new Block("filename", i);
+        }
+
+        System.out.println("Initial State of Buffer Pool:");
+        printBufferPool(basicBufferMgr);
+        
+        System.out.println("Now pin 3 Blocks");
+        Buffer[] buffers = new Buffer[3];
+
+        for (int i = 0; i < 3; i++) {
+            Block block = blocks[i];
+            System.out.println("\tPinning Block " + block);
+            Buffer buffer = basicBufferMgr.pin(block);
+            //TimeUnit.SECONDS.sleep(1);
+            System.out.println("\tBlock Pinned to Buffer " + buffer);
+            buffers[i] = buffer;
+        }
+
+        System.out.println("Buffer Pool after setting 3 blocks");
+        printBufferPool(basicBufferMgr);
+         
+        System.out.println("BufferPool should contain block 1, checking ..");
+        if(basicBufferMgr.containsMapping(blocks[1])) {
+            System.out.println("BufferPool contains block 1: Test Pass");
+            System.out.println("\t" + ": " + blocks[1].toString() + " = [" + basicBufferMgr.getMapping(blocks[1]).toString() + "]\t");
+        }
+        else {
+            System.out.println("BufferPool does not contain block 1: Test Fail");
+        }
+
+        System.out.println("BufferPool should not contain block 3, checking ..");
+        if(!basicBufferMgr.containsMapping(blocks[3])) {
+            System.out.println("BufferPool does not contain block 3: Test Pass");
+        }
+        else {
+            System.out.println("BufferPool contains block 3: Test Fail");
+        }
+        
+        basicBufferMgr.clearBufferPoolMap();
+        System.out.println("Buffer pool after clearing");
+        printBufferPool(basicBufferMgr);
+        
+        //TODO: We also need to reset the numAvailable Flag here.
+        System.out.println("----------Buffer Test Scenario 6 Run Complete----------");
+        */
         System.out.println("TearDown");
         reg.unbind(BINDING_NAME);
         reg = null;

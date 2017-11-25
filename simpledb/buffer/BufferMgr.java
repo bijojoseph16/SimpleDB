@@ -135,6 +135,28 @@ public class BufferMgr {
        return bufferMgr.getBufferPoolMap();
    }
 
+   //Edit
+   /*
+    * Determines whether the map has a mapping
+    * from the block to some buffer 
+    * @param blk the block to use as key
+    * @return true if there is a mapping
+    */
+   public boolean containsMapping(Block blk) {
+       return bufferMgr.containsMapping(blk);
+   }
+   
+   /*
+    * Returns the buffer the map maps the
+    * specified block to
+    * @param blk the block to use as key
+    * @return the buffer mapped to it otherwise null;
+    */
+   public Buffer getMapping(Block blk) {
+       return bufferMgr.getMapping(blk);
+   }
+   //End Edit
+   
    /*
     * Clear the buffer pool 
     */
