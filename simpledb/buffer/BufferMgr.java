@@ -2,8 +2,6 @@ package simpledb.buffer;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import simpledb.buffer.BasicBufferMgr.BufferInfo;
 import simpledb.file.*;
 
 /**

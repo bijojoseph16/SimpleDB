@@ -39,6 +39,7 @@ public class BufferTest3 {
         //Algorithm should default to LRU as there are 2 buffers 
         //with infinite LRU2 distance
         //Only use 1 to 10
+       //Make change in SimpleDB.java, BUFFER_SIZE = 8;
         System.out.println("Create 11 Blocks");
         Block[] blocks = new Block[11];
                  

@@ -12,7 +12,7 @@ class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
    //Edits
-   private static final HashMap<Block, BufferInfo> bufferPoolMap = new LinkedHashMap<Block, BufferInfo>();
+   private static final HashMap<Block, Buffer> bufferPoolMap = new LinkedHashMap<Block, Buffer>();
    private int bufferPoolSize;
    /**
     * Creates a buffer manager having the specified number 
@@ -48,8 +48,7 @@ class BasicBufferMgr {
          buff.flush();
       */
        //Edits
-       for(BufferInfo bufferInfo :bufferPoolMap.values()) {
-           Buffer buffer = bufferInfo.getBuffer();
+       for(Buffer buffer :bufferPoolMap.values()) {
            if(buffer.isModifiedBy(txnum)) {
              buffer.flush();            
            }
@@ -76,19 +75,21 @@ class BasicBufferMgr {
          buff.assignToBlock(blk);
          */
          //Edit
+         
+         //Remove the buffer and clear the timestamps
          bufferPoolMap.remove(buff.block());
+         buff.clearTimestamps();
+         
          buff.assignToBlock(blk);
          if (!buff.isPinned())
              numAvailable--;
           buff.pin();
           
-          //Create a new Buffer Info
-          BufferInfo bufferInfo = new BufferInfo();
-          bufferInfo.addBufferToBufferInfo(buff);
-          bufferInfo.addTimestamp(System.currentTimeMillis());
+          //Add pin time to buffer
+          buff.addTimestamp(System.currentTimeMillis());
           
-          //Now put BUfferInfo into buffer pool
-          bufferPoolMap.put(blk, bufferInfo);
+          //Now put BUffer into buffer pool
+          bufferPoolMap.put(blk, buff);
           return buff;
          //End Edit
       }
@@ -97,10 +98,10 @@ class BasicBufferMgr {
           numAvailable--;
         
         buff.pin();
-        BufferInfo bufferInfo = bufferPoolMap.get(blk);
+        Buffer buffer = bufferPoolMap.get(blk);
         bufferPoolMap.remove(buff.block());
-        bufferInfo.addTimestamp(System.currentTimeMillis());
-        bufferPoolMap.put(blk, bufferInfo);
+        buffer.addTimestamp(System.currentTimeMillis());
+        bufferPoolMap.put(blk, buffer);
         return buff;
       }
       
@@ -159,9 +160,7 @@ class BasicBufferMgr {
          return null;
      }
      else {
-         BufferInfo bufferInfo = bufferPoolMap.get(blk);
-         Buffer buffer = bufferInfo.getBuffer();
-         
+         Buffer buffer = bufferPoolMap.get(blk);         
          return buffer;
      }
    }
@@ -195,19 +194,19 @@ class BasicBufferMgr {
    public Buffer LRU2() throws BufferAbortException{
        int numInfinity = 0;
        int bufferInfoIndex = -1;
-       List<BufferInfo> unpinnedBufferInfoList = new ArrayList<BufferInfo>();
-       for(Map.Entry<Block, BufferInfo> b : bufferPoolMap.entrySet()) {
-           BufferInfo bufferInfo = b.getValue();
-           Buffer buffer = bufferInfo.getBuffer();
+       List<Buffer> unpinnedBufferList = new ArrayList<Buffer>();
+       for(Map.Entry<Block, Buffer> b : bufferPoolMap.entrySet()) {
+           Buffer buffer = b.getValue();
+     
            if(!buffer.isPinned()) {
-               unpinnedBufferInfoList.add(bufferInfo);
+               unpinnedBufferList.add(buffer);
            }
        }
        
-       if(unpinnedBufferInfoList.size() > 0) {
-           for(int i = 0; i < unpinnedBufferInfoList.size(); i++) {
-               BufferInfo bufferInfo = unpinnedBufferInfoList.get(i);
-               List<Long> timestamps = bufferInfo.getTimestamps();
+       if(unpinnedBufferList.size() > 0) {
+           for(int i = 0; i < unpinnedBufferList.size(); i++) {
+               Buffer buffer = unpinnedBufferList.get(i);
+               List<Long> timestamps = buffer.getTimestamps();
                //System.out.println(timestamps.toString());
                if(timestamps.size() < 2) {
                    numInfinity++;
@@ -223,9 +222,9 @@ class BasicBufferMgr {
                //Get the buffer that has the maximum LRU2 distance
                //At the end of for loop we will have the buffer
                //at maximum LRU2 distance
-               for(int i = 0; i < unpinnedBufferInfoList.size(); i++) {
-                   BufferInfo bufferInfo = unpinnedBufferInfoList.get(i);
-                   List<Long> timestamps = bufferInfo.getTimestamps();
+               for(int i = 0; i < unpinnedBufferList.size(); i++) {
+                   Buffer buffer = unpinnedBufferList.get(i);
+                   List<Long> timestamps = buffer.getTimestamps();
                    long tmpMaxDistance = currentTime - timestamps.get(0);
                    
                    if(tmpMaxDistance > maxDistance) {
@@ -234,20 +233,19 @@ class BasicBufferMgr {
                    }
                }
                
-               BufferInfo bufferInfo = unpinnedBufferInfoList.get(indexOfBufferToReplace);
-               Buffer buffer = bufferInfo.getBuffer();
-               
+               Buffer buffer = unpinnedBufferList.get(indexOfBufferToReplace);          
                return buffer;
            }
-           //Get the bufferInfo index, as it occurs only once
+           
+           //Get the buffer index, as it occurs only once
            //this is the buffer to replace
            else if(numInfinity == 1) {
-               BufferInfo bufferInfo = unpinnedBufferInfoList.get(bufferInfoIndex);
-               Buffer buffer = bufferInfo.getBuffer();
+               Buffer buffer = unpinnedBufferList.get(bufferInfoIndex);
                return buffer;
            }
+           
            else {
-               Buffer buffer = LRU(unpinnedBufferInfoList);
+               Buffer buffer = LRU(unpinnedBufferList);
                return buffer;
            }
        }
@@ -260,14 +258,15 @@ class BasicBufferMgr {
     * @bufferInfoIndex - index of buffer to be replaced
     * 
     */
-   private Buffer LRU(List<BufferInfo> unpinnedBufferInfoList) {
+   private Buffer LRU(List<Buffer> unpinnedBufferList) {
        int bufferInfoIndex = -1;
        long maxLeastRecentTimeDifference = -1;
        //Chose the buffer that has the lowest timestamp
        long currentTime = System.currentTimeMillis();
-       for(int i = 0;i < unpinnedBufferInfoList.size(); i++) {
-           BufferInfo bufferInfo = unpinnedBufferInfoList.get(i);
-           List<Long> timestamps = bufferInfo.getTimestamps();
+ 
+       for(int i = 0;i < unpinnedBufferList.size(); i++) {
+           Buffer buffer = unpinnedBufferList.get(i);
+           List<Long> timestamps = buffer.getTimestamps();
            long tmpLeastRecentTime = timestamps.get(timestamps.size() - 1);
            
            //keep track of the least time and the bufferInfoIndex
@@ -278,9 +277,7 @@ class BasicBufferMgr {
                //System.out.println("Buffer Index "+bufferInfoIndex);
            }
        }
-       BufferInfo bufferInfo = unpinnedBufferInfoList.get(bufferInfoIndex);
-       Buffer buffer = bufferInfo.getBuffer();
-       
+       Buffer buffer = unpinnedBufferList.get(bufferInfoIndex);       
        return buffer;
    }
    
@@ -291,8 +288,8 @@ class BasicBufferMgr {
     */
    public Map<Block, Buffer> getBufferPoolMap() {
        Map<Block, Buffer> bufferPool = new HashMap<Block,Buffer>();
-       for (Map.Entry<Block, BufferInfo> e : bufferPoolMap.entrySet()) {
-           bufferPool.put(e.getKey(), e.getValue().getBuffer());
+       for (Map.Entry<Block, Buffer> e : bufferPoolMap.entrySet()) {
+           bufferPool.put(e.getKey(), e.getValue());
        } 
        return bufferPool;
    }
@@ -320,49 +317,9 @@ class BasicBufferMgr {
     */
    public Buffer getMapping(Block blk) {
        if(containsMapping(blk)) {
-         BufferInfo bufferInfo = bufferPoolMap.get(blk);
-         Buffer buffer = bufferInfo.getBuffer();
-         return buffer;
+         return bufferPoolMap.get(blk);
        }
        return null;
    }
    //End Edit
-   
-   /*
-    * Class that has the buffer
-    * and also the timestamp of last and
-    * second last arrival
-    */
-   public class BufferInfo {
-       private Buffer buffer;
-       private Queue<Long> timestamps;
-       
-       private BufferInfo() {
-           this.buffer = null;
-           timestamps = new LinkedList<Long>();
-       }
-       private void addBufferToBufferInfo(Buffer buffer) {
-           this.buffer = buffer;
-       }
-       private void addTimestamp(Long timestamp) {
-           if(timestamps.size() == 2) {
-               timestamps.remove();
-               timestamps.add(timestamp);
-           }
-           else {
-               
-               timestamps.add(timestamp);
-           }
-       }
-       private Buffer getBuffer() {
-           return this.buffer;
-       }
-       private List<Long> getTimestamps() {
-           List<Long> timestamps = new ArrayList<Long>();
-           for(Long timestamp:this.timestamps) {
-               timestamps.add(timestamp);
-           }
-           return timestamps;
-       }
-   }
 }

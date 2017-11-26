@@ -1,6 +1,12 @@
 package simpledb.buffer;
 
 import simpledb.server.SimpleDB;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import simpledb.file.*;
 
 /**
@@ -19,7 +25,7 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
-
+   private Queue<Long> timestamps;
    /**
     * Creates a new buffer, wrapping a new 
     * {@link simpledb.file.Page page}.  
@@ -34,7 +40,9 @@ public class Buffer {
     * {@link simpledb.server.SimpleDB#initFileAndLogMgr(String)} or
     * is called first.
     */
-   public Buffer() {}
+   public Buffer() {
+       timestamps = new LinkedList<Long>();
+   }
    
    /**
     * Returns the integer value at the specified offset of the
@@ -187,4 +195,40 @@ public class Buffer {
       blk = contents.append(filename);
       pins = 0;
    }
+  
+   /*
+    * Add the pin time of the buffer
+    */
+   public void addTimestamp(Long timestamp) {
+       if(timestamps.size() == 2) {
+           timestamps.remove();
+           timestamps.add(timestamp);
+       }
+       else {
+           
+           timestamps.add(timestamp);
+       }
+   }
+   
+   /*
+    * Clear all timestamps associated with 
+    * a buffer it a new block is assigned to it
+    */
+   public void clearTimestamps() {
+       while(timestamps.size() > 0) {
+           timestamps.remove();
+       }
+   }
+   /*
+    * Get the the last and second last pin time
+    */
+   public List<Long> getTimestamps() {
+       List<Long> timestamps = new ArrayList<Long>();
+       for(Long timestamp:this.timestamps) {
+           timestamps.add(timestamp);
+       }
+       return timestamps;
+   }
+
+
 }
