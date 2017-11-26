@@ -25,7 +25,7 @@ public class BufferTest {
       public static void main(String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
         System.out.println("Starting");
-        SimpleDB.init("simpleDB");
+        SimpleDB.init("simpleDB1");
         reg = LocateRegistry.createRegistry(DEFAULT_PORT);
         reg.rebind(BINDING_NAME,new RemoteDriverImpl());
         System.out.println("Set Up Complete");

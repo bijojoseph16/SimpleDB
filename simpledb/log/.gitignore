@@ -1,3 +1,5 @@
 /BasicLogRecord.class
 /LogIterator.class
 /LogMgr.class
+/LogMgr_dup.class
+/LogFormatter.class
