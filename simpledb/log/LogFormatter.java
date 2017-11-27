@@ -26,12 +26,12 @@ public class LogFormatter implements PageFormatter{
 	    * @see simpledb.buffer.PageFormatter#format(simpledb.file.Page)
 	    */
 	   public void format(Page page) {
-		   String testString = new String("abc");
+		   /*String testString = new String("abc");
 		   int recSize = STR_SIZE(testString.length());
 	      for (int pos=0; pos+recSize<=BLOCK_SIZE; pos += recSize) {
 	         //page.setInt(pos, EMPTY);
 	         page.setString(pos, testString);
-	      }
+	      }*/
 	   }
 
 }
