@@ -4,6 +4,7 @@ import static simpledb.file.Page.BLOCK_SIZE;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -75,7 +76,7 @@ public class FileMgr {
       try {
          bb.rewind();
          FileChannel fc = getFile(blk.fileName());
-         fc.write(bb, blk.number() * BLOCK_SIZE);
+         fc.write(bb, blk.number() * BLOCK_SIZE); 
       }
       catch (IOException e) {
          throw new RuntimeException("cannot write block" + blk);

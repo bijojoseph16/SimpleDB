@@ -118,6 +118,19 @@ public class Buffer {
    public Block block() {
       return blk;
    }
+   
+ //Edit
+   /**
+    * Writes the page to its disk block if the
+    * page is dirty (only for Log).
+    * The method ensures that the corresponding log
+    * record has been written to disk prior to writing
+    * the page to disk.
+    */
+   public void flushLog() {
+	   contents.write(blk);
+   }
+
 
    /**
     * Writes the page to its disk block if the
@@ -133,7 +146,7 @@ public class Buffer {
          modifiedBy = -1;
       }
    }
-
+   
    /**
     * Increases the buffer's pin count.
     */
@@ -195,6 +208,7 @@ public class Buffer {
       blk = contents.append(filename);
       pins = 0;
    }
+<<<<<<< HEAD
   
    /*
     * Add the pin time of the buffer
@@ -231,4 +245,13 @@ public class Buffer {
    }
 
 
+=======
+   
+   
+   public String toString() {
+	   return contents.toString();
+	   
+   }
+   
+>>>>>>> 47913c995482d2c38d3c2f8e706d6095deed6eb7
 }
