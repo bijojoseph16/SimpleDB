@@ -49,6 +49,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
       int logsize = SimpleDB.fileMgr().size(logfile);
       if (logsize == 0) {
          appendNewBlock();
+         System.out.println("Log File Assigned New Buffer");
       }
    else {
          /*currentblk = new Block(logfile, logsize-1);
@@ -60,6 +61,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
          currentblk = new Block(logfile, logsize-1);
          logBuffer = SimpleDB.bufferMgr().pin(currentblk);
          currentpos = getLastRecordPosition() + INT_SIZE;
+         System.out.println("Log File Assigned a Buffer");
          
       }
       
@@ -130,6 +132,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    public void printLogPageBuffer() {
 	   if(logBuffer != null) {
 		   System.out.println(logBuffer.toString());
+		   return;
 	   }
 	   System.out.println("LogPage is not Assigned a buffer");
    }
@@ -193,7 +196,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    /**
     * Clear the current page, and append it to the log file.
     */
-   private void appendNewBlock() {
+   private synchronized void appendNewBlock() {
       /*setLastRecordPosition(0);
       currentpos = INT_SIZE;
       currentblk = mypage.append(logfile);*/

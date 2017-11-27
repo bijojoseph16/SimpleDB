@@ -38,7 +38,7 @@ public class BufferTest6 {
         //Test bufferPoolMap 
         //If a mapping exits between block and buffer show the it
         //Else print no mapping exits
-        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        //Make change in SimpleDB.java, BUFFER_SIZE = 4;
         System.out.println("Create 4 Blocks");
         Block[] blocks = new Block[4];
         

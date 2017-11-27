@@ -23,7 +23,7 @@ import simpledb.index.planner.IndexUpdatePlanner;
  * @author Edward Sciore
  */
 public class SimpleDB {
-   public static int BUFFER_SIZE = 4;
+   public static int BUFFER_SIZE = 4; //One for the log buffer
    public static String LOG_FILE = "simpledb1.log";
    
    private static FileMgr     fm;
@@ -38,7 +38,7 @@ public class SimpleDB {
     */
    public static void init(String dirname) {
       initFileLogAndBufferMgr(dirname);
-      Transaction tx = new Transaction();
+      /*Transaction tx = new Transaction();
       boolean isnew = fm.isNew();
       if (isnew)
          System.out.println("creating new database");
@@ -48,6 +48,7 @@ public class SimpleDB {
       }
       initMetadataMgr(isnew, tx);
       tx.commit();
+      */
    }
    
    // The following initialization methods are useful for 

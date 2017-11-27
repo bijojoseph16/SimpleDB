@@ -88,6 +88,11 @@ public class Buffer {
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
    }
+   
+   public void setInt(int offset, int val) {  
+	   modifiedBy = 100;
+	   contents.setInt(offset, val);
+   }
 
    /**
     * Writes a string to the specified offset of the
@@ -108,6 +113,12 @@ public class Buffer {
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
+   }
+   
+   //Overloaded setString
+   public void setString(int offset, String val) {  
+	   modifiedBy = 100;
+	   contents.setString(offset, val);
    }
 
    /**

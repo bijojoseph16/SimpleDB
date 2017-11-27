@@ -27,7 +27,8 @@ public class BufferTestLog {
       public static void main(String[] args) throws RemoteException, NotBoundException, InterruptedException {
         
         System.out.println("Starting");
-        SimpleDB.init("simpleDB1");
+        
+        SimpleDB.init("simpleDB");
         reg = LocateRegistry.createRegistry(DEFAULT_PORT);
         reg.rebind(BINDING_NAME,new RemoteDriverImpl());
         System.out.println("Set Up Complete");
@@ -37,9 +38,10 @@ public class BufferTestLog {
         BufferMgr buffMgr = SimpleDB.bufferMgr();
         
         /*Testing Logmanager*/
-        int lsn1 = SimpleDB.logMgr().append(new Object[] {"a","b"});
-        int lsn2 = SimpleDB.logMgr().append(new Object[] {"c","d"});
-        int lsn3 = SimpleDB.logMgr().append(new Object[] {"e","f"});
+        
+        int lsn1 = SimpleDB.logMgr().append(new Object[] {"This is log One"});
+        int lsn2 = SimpleDB.logMgr().append(new Object[] {"This is log Two"});
+        int lsn3 = SimpleDB.logMgr().append(new Object[] {"This is log Three"});
         SimpleDB.logMgr().flush(lsn3);
         
         Iterator<BasicLogRecord> iter = SimpleDB.logMgr().iterator();
@@ -47,15 +49,15 @@ public class BufferTestLog {
         while(iter.hasNext() && x++ < 3) {
         		BasicLogRecord rec = iter.next();
         		String v1 = rec.nextString();
-        		String v2 = rec.nextString();
-        		System.out.println("[" + v1 + ", " + v2 + "]" );
+        		//String v2 = rec.nextString();
+        		System.out.println("[" + v1 + "]" );
         }
         
         SimpleDB.logMgr().printLogPageBuffer();
         
         //Test Secanrio 1
         //Test1 for LRU2
-        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        //Make change in SimpleDB.java, BUFFER_SIZE = 4;
         System.out.println("Create 4 Blocks");
         Block[] blocks = new Block[4];
         
@@ -70,7 +72,7 @@ public class BufferTestLog {
         
         System.out.println("Now pin 3 Blocks");
         Buffer[] buffers = new Buffer[3];
-
+        
         for (int i = 0; i < 3; i++) {
             Block block = blocks[i];
             System.out.println("\tPinning Block " + block);
@@ -78,7 +80,13 @@ public class BufferTestLog {
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
         }
-
+        
+        //Writing to the buffers
+        buffers[0].setInt(0,49);
+        buffers[1].setString(0,"File Entry in Block 1");
+        buffers[2].setString(0,"File Entry in Block 2");
+      
+        
         System.out.println("Buffer Pool after setting 3 blocks");
         printBufferPool(buffMgr);
 
@@ -101,7 +109,10 @@ public class BufferTestLog {
         buffMgr.pin(blocks[3]);        
         System.out.println("Buffer Pool after pinning new block 3:");
         printBufferPool(buffMgr);
-
+        
+        
+        
+        
         System.out.println("Now we have 2 unpinned buffers available, both have LRU2 infinity.");
         System.out.println("As per LRU2 block 0 should be removed");
         if(!buffMgr.getBufferPoolMap().containsKey(blocks[0])) {

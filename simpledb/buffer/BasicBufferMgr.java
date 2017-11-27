@@ -117,14 +117,35 @@ class BasicBufferMgr {
     * @return the pinned buffer
     */
    synchronized Buffer pinNew(String filename, PageFormatter fmtr) throws BufferAbortException{
-      Buffer buff = chooseUnpinnedBuffer();
+      /*Buffer buff = chooseUnpinnedBuffer();
       if (buff == null)
          return null;
       buff.assignToNew(filename, fmtr);
       numAvailable--;
       buff.pin();
       return buff;
+      */
+      
+      
+      //Edit
+      Buffer buff = chooseUnpinnedBuffer();
+      if (buff == null)
+         return null;
+      //Remove the buffer and clear the timestamps
+      bufferPoolMap.remove(buff.block());
+      buff.clearTimestamps();
+      buff.assignToNew(filename, fmtr);
+      numAvailable--;
+      buff.pin();
+      //Add pin time to buffer
+      buff.addTimestamp(System.currentTimeMillis());
+      //Now put BUffer into buffer pool
+      bufferPoolMap.put(buff.block(), buff);
+      return buff;
+     //End Edit
    }
+   
+   
    
    /**
     * Unpins the specified buffer.
