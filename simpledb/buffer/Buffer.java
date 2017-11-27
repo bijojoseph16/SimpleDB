@@ -208,7 +208,6 @@ public class Buffer {
       blk = contents.append(filename);
       pins = 0;
    }
-<<<<<<< HEAD
   
    /*
     * Add the pin time of the buffer
@@ -245,7 +244,6 @@ public class Buffer {
    }
 
 
-=======
    
    
    public String toString() {
@@ -253,5 +251,4 @@ public class Buffer {
 	   
    }
    
->>>>>>> 47913c995482d2c38d3c2f8e706d6095deed6eb7
 }
