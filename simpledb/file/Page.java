@@ -1,8 +1,12 @@
 package simpledb.file;
 
 import simpledb.server.SimpleDB;
+
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * The contents of a disk block in memory.
@@ -155,5 +159,14 @@ public class Page {
       byte[] byteval = val.getBytes();
       contents.putInt(byteval.length);
       contents.put(byteval);
+   }
+   
+   public String toString() {
+	      ByteBuffer contentsCopy = contents.duplicate();
+	      contentsCopy.rewind();
+	      byte[] bytes = new byte[contentsCopy.remaining()];
+	      contentsCopy.get(bytes); // read the bytes that were written
+	      String packet = new String(Arrays.toString(bytes));
+	   return packet;
    }
 }
