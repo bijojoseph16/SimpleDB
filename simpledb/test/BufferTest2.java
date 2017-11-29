@@ -37,7 +37,7 @@ public class BufferTest2 {
         //Test Secanrio 2
         //Test1 for LRU2 test if the the queue which
         //holds the timestamp is being updated correctly
-        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        //Make change in SimpleDB.java, BUFFER_SIZE = 4;
         System.out.println("Create 4 Blocks");
         Block[] blocks = new Block[4];
         
@@ -124,7 +124,8 @@ public class BufferTest2 {
         printBufferPool(basicBufferMgr);
         //TODO: We also need to reset the numAvailable Flag here.
         System.out.println("----------Buffer Test Scenario 2 Run Complete----------");
-
+        
+        SimpleDB.logMgr().printLogPageBuffer();
         
         System.out.println("TearDown");
         reg.unbind(BINDING_NAME);
