@@ -243,9 +243,6 @@ public class Buffer {
        return timestamps;
    }
 
-
-   
-   
    public String toString() {
 	   return contents.toString();
 	   

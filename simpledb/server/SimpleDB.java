@@ -23,7 +23,7 @@ import simpledb.index.planner.IndexUpdatePlanner;
  * @author Edward Sciore
  */
 public class SimpleDB {
-   public static int BUFFER_SIZE = 4;
+   public static int BUFFER_SIZE = 9;
    public static String LOG_FILE = "simpledb1.log";
    
    private static FileMgr     fm;

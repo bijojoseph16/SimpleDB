@@ -195,6 +195,7 @@ class BasicBufferMgr {
        int numInfinity = 0;
        int bufferInfoIndex = -1;
        List<Buffer> unpinnedBufferList = new ArrayList<Buffer>();
+       List<Buffer> unpinnedBufferListWithLRU2Inf = new ArrayList<Buffer>();
        for(Map.Entry<Block, Buffer> b : bufferPoolMap.entrySet()) {
            Buffer buffer = b.getValue();
      
@@ -211,6 +212,7 @@ class BasicBufferMgr {
                if(timestamps.size() < 2) {
                    numInfinity++;
                    bufferInfoIndex = i;
+                   unpinnedBufferListWithLRU2Inf.add(buffer);
                }
            }
            //Chose buffer by using LRU2
@@ -245,7 +247,7 @@ class BasicBufferMgr {
            }
            
            else {
-               Buffer buffer = LRU(unpinnedBufferList);
+               Buffer buffer = LRU(unpinnedBufferListWithLRU2Inf);
                return buffer;
            }
        }
@@ -258,14 +260,14 @@ class BasicBufferMgr {
     * @bufferInfoIndex - index of buffer to be replaced
     * 
     */
-   private Buffer LRU(List<Buffer> unpinnedBufferList) {
+   private Buffer LRU(List<Buffer> unpinnedBufferListWithLRU2Inf) {
        int bufferInfoIndex = -1;
        long maxLeastRecentTimeDifference = -1;
        //Chose the buffer that has the lowest timestamp
        long currentTime = System.currentTimeMillis();
  
-       for(int i = 0;i < unpinnedBufferList.size(); i++) {
-           Buffer buffer = unpinnedBufferList.get(i);
+       for(int i = 0;i < unpinnedBufferListWithLRU2Inf.size(); i++) {
+           Buffer buffer = unpinnedBufferListWithLRU2Inf.get(i);
            List<Long> timestamps = buffer.getTimestamps();
            long tmpLeastRecentTime = timestamps.get(timestamps.size() - 1);
            
@@ -277,7 +279,7 @@ class BasicBufferMgr {
                //System.out.println("Buffer Index "+bufferInfoIndex);
            }
        }
-       Buffer buffer = unpinnedBufferList.get(bufferInfoIndex);       
+       Buffer buffer = unpinnedBufferListWithLRU2Inf.get(bufferInfoIndex);       
        return buffer;
    }
    

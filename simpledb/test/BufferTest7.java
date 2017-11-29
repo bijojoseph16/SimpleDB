@@ -16,7 +16,7 @@ import simpledb.buffer.BufferMgr;
 import simpledb.file.Block;
 
 
-public class BufferTest3 {
+public class BufferTest7 {
 
       private static Registry reg;
       private static final int DEFAULT_PORT = 1099;
@@ -59,6 +59,12 @@ public class BufferTest3 {
             Buffer buffer = basicBufferMgr.pin(block);
             System.out.println("\tBlock Pinned to Buffer " + buffer);
             buffers[i] = buffer;
+            if(i == 2) {
+                System.out.println("\tPinning Block " + block);
+                buffer = basicBufferMgr.pin(block);
+                System.out.println("\tBlock Pinned to Buffer " + buffer);
+                buffers[i] = buffer;                
+            }
            
         }
 
@@ -66,11 +72,6 @@ public class BufferTest3 {
         System.out.println("\tPinning Block " + blocks[4]);
         System.out.println("\tBlock Pinned to Buffer " + basicBufferMgr.pin(blocks[4]));
         buffers[4] = basicBufferMgr.pin(blocks[4]);
-
-        System.out.println("Now pin block 2");
-        System.out.println("\tPinning Block " + blocks[2]);
-        System.out.println("\tBlock Pinned to Buffer " + basicBufferMgr.pin(blocks[2]));
-        buffers[2] = basicBufferMgr.pin(blocks[2]);
 
         System.out.println("Now pin block 7");
         System.out.println("\tPinning Block " + blocks[7]);
@@ -82,7 +83,7 @@ public class BufferTest3 {
         System.out.println("\tBlock Pinned to Buffer " + basicBufferMgr.pin(blocks[1]));
         buffers[1] = basicBufferMgr.pin(blocks[1]);
 
-        System.out.println("Buffer Pool after setting 8 blocks and pinning Blocks 4, 2, 7, 1:");
+        System.out.println("Buffer Pool after setting 8 blocks and pinning Blocks 4, 7, 1:");
         printBufferPool(basicBufferMgr);
 
         System.out.println("Unpining Blocks");
