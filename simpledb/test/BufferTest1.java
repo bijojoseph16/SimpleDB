@@ -36,7 +36,7 @@ public class BufferTest1 {
         
         //Test Secanrio 1
         //Test1 for LRU2
-        //Make change in SimpleDB.java, BUFFER_SIZE = 3;
+        //Make change in SimpleDB.java, BUFFER_SIZE = 4;
         System.out.println("Create 4 Blocks");
         Block[] blocks = new Block[4];
         
