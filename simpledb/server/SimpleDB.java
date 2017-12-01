@@ -36,6 +36,8 @@ public class SimpleDB {
     * Initializes the system.
     * This method is called during system startup.
     * @param dirname the name of the database directory
+    * 
+    *
     */
    public static void init(String dirname) {
       initFileLogAndBufferMgr(dirname);
@@ -81,8 +83,8 @@ public class SimpleDB {
     * Edit
     * Changed the order of initialization of the BufferMgr object and LogMgr Object
     * so that a buffer is available when the Log manager requests for it during its 
-    * initialization
-    * 
+    * initialization. 
+    * this call is made from the init method
     * @author mohit Satarkar 
     */
    public static void initFileLogAndBufferMgr(String dirname) {
