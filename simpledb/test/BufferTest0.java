@@ -35,6 +35,7 @@ public class BufferTest0 {
         BufferMgr basicBufferMgr = SimpleDB.bufferMgr();
         
         //Test Secanrio 0
+       //Make change in SimpleDB.java, BUFFER_SIZE = 3;
         System.out.println("Create 4 Blocks");
         Block[] blocks = new Block[4];
         
