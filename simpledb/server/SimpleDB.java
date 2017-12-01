@@ -83,7 +83,7 @@ public class SimpleDB {
     * so that a buffer is available when the Log manager requests for it during its 
     * initialization
     * 
-    * @author neetishpathak (npathak2)
+    * @author mohit Satarkar 
     */
    public static void initFileLogAndBufferMgr(String dirname) {
       /*initFileAndLogMgr(dirname);

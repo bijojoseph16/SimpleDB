@@ -211,7 +211,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * Edit:
     * Change the write functionality by not writing into the page
     * and let the log_buffer be flushed
-    *  @author neetishpathak (npathak2)
+    *  @author pgupta (pgupta9)
     */
    private void flush() {
       //mypage.write(currentblk);
@@ -251,7 +251,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * Edit
     * Used logBuffer's setInt method to finalize a record 
     * 
-    * @author neetishpathak
+    * @author Pratyush Gupta (pgupta9)
     */
    private void finalizeRecord() {
      /* mypage.setInt(currentpos, getLastRecordPosition());
@@ -268,7 +268,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    /*Edit
     * getLastRecord now uses the getInt of the buffer class
     * 
-    *  @author neetishpathak
+    *  @author Mohit Satarkar
     * */
    private int getLastRecordPosition() {
       //return mypage.getInt(LAST_POS);
@@ -279,7 +279,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    /*Edit
     * setLastRecordPosition now uses the setInt of the buffer class
     * 
-    *  @author neetishpathak
+    *  @author Neetish Pathak
     * */
    private void setLastRecordPosition(int pos) {
       //mypage.setInt(LAST_POS, pos);
