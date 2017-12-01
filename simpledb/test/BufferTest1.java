@@ -5,15 +5,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import simpledb.remote.RemoteDriverImpl;
 import simpledb.server.SimpleDB;
 
 import simpledb.buffer.Buffer;
-import simpledb.buffer.BufferAbortException;
 import simpledb.buffer.BufferMgr;
 import simpledb.file.Block;
+import simpledb.remote.RemoteDriverImpl;
 
 
 public class BufferTest1 {
