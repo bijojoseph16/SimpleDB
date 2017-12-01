@@ -18,6 +18,11 @@ import simpledb.file.*;
  * and if so, the id of the modifying transaction and
  * the LSN of the corresponding log record.
  * @author Edward Sciore
+ * 
+ * edits
+ * added new attribute timestamps to keep track
+ * of pin time
+ * @author Mohit Satarkar
  */
 public class Buffer {
    private Page contents = new Page();
@@ -25,7 +30,10 @@ public class Buffer {
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
    private int logSequenceNumber = -1; // negative means no corresponding log record
+   //Edit
    private Queue<Long> timestamps;
+   //End Edit
+   
    /**
     * Creates a new buffer, wrapping a new 
     * {@link simpledb.file.Page page}.  
@@ -39,9 +47,15 @@ public class Buffer {
     * Thus this constructor cannot be called until 
     * {@link simpledb.server.SimpleDB#initFileAndLogMgr(String)} or
     * is called first.
+    * 
+    * edits 
+    * initialize a new timestamps queue for every new buffer created
+    * @author Pratyush Gupta
     */
    public Buffer() {
+       //Edit
        timestamps = new LinkedList<Long>();
+       //End Edit
    }
    
    /**
@@ -220,9 +234,14 @@ public class Buffer {
       pins = 0;
    }
   
-   /*
-    * Add the pin time of the buffer
+   /**
+    * 
+    * @param timestamp
+    * edits add the pin time to the buffer
+    * only keep the last two pin time
+    * @author Bijo Joseph
     */
+   //Edit
    public void addTimestamp(Long timestamp) {
        if(timestamps.size() == 2) {
            timestamps.remove();
@@ -233,19 +252,30 @@ public class Buffer {
            timestamps.add(timestamp);
        }
    }
+   //End Edit
    
-   /*
-    * Clear all timestamps associated with 
-    * a buffer it a new block is assigned to it
+   /**
+    * edits
+    * Clear all timestamps associated with  
+    * a buffer when a new block is assigned to it
+    * @author Pratuysh Gupta 
     */
+   //Edit
    public void clearTimestamps() {
        while(timestamps.size() > 0) {
            timestamps.remove();
        }
    }
-   /*
-    * Get the the last and second last pin time
+   //End Edit
+   
+   /**
+    * 
+    * @return timestamps
+    * edits
+    * Return the timestamps, used during replacement
+    * @author Mohit Satarkar
     */
+   //Edit
    public List<Long> getTimestamps() {
        List<Long> timestamps = new ArrayList<Long>();
        for(Long timestamp:this.timestamps) {
@@ -253,10 +283,20 @@ public class Buffer {
        }
        return timestamps;
    }
-
+   //End Edit
+   
    public String toString() {
 	   return contents.toString();
 	   
+   }
+   
+   /**
+    * @return
+    * edits
+    * Used during testing to get pin time
+    */
+   public int getPinCount() {
+       return pins;
    }
    
 }

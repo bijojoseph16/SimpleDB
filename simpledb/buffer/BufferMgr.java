@@ -124,39 +124,48 @@ public class BufferMgr {
       return System.currentTimeMillis() - starttime > MAX_TIME;
    }
    
-   /*
+   /**
+    * edits
     * Return the mapping of blk to buffer
     * Used during testing to check if mapping
     * is correct
+    * @author Bijo Joseph
     */
+   //Edit
    public Map<Block, Buffer> getBufferPoolMap() {
        return bufferMgr.getBufferPoolMap();
    }
+   //End Edit
 
    //Edit
-   /*
+   /**
+    * edits
     * Determines whether the map has a mapping
     * from the block to some buffer 
     * @param blk the block to use as key
     * @return true if there is a mapping
+    * @author Mohit Satarkar
     */
    public boolean containsMapping(Block blk) {
        return bufferMgr.containsMapping(blk);
    }
    
-   /*
+   /**
     * Returns the buffer the map maps the
     * specified block to
     * @param blk the block to use as key
     * @return the buffer mapped to it otherwise null;
+    * @author Pratyush Gupta
     */
    public Buffer getMapping(Block blk) {
        return bufferMgr.getMapping(blk);
    }
    //End Edit
    
-   /*
-    * Clear the buffer pool 
+   /**
+    * edits
+    * To Clear the bufferPool after every test case
+    * @author Mohit Satarkar
     */
    public void clearBufferPoolMap() {
        bufferMgr.clearBufferPoolMap();

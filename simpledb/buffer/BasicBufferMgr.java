@@ -11,9 +11,19 @@ import java.util.*;
 class BasicBufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
-   //Edits
+   
+   
+   /**
+    * edits
+   *​ ​ bufferPoolMap to hold the mapping, linked has map is used to maintain order of arrival
+   *​ ​ @author​ ​ Bijo Joseph
+   */
+   //Edit
    private static final HashMap<Block, Buffer> bufferPoolMap = new LinkedHashMap<Block, Buffer>();
+   //End Edit
+   
    private int bufferPoolSize;
+   
    /**
     * Creates a buffer manager having the specified number 
     * of buffer slots.
@@ -26,34 +36,48 @@ class BasicBufferMgr {
     * {@link simpledb.server.SimpleDB#initFileAndLogMgr(String)} or
     * is called first.
     * @param numbuffs the number of buffer slots to allocate
+    * 
+    * edits
+    * @author Bijo Joseph, added parameter bufferPoolSize to track availability
     */
    BasicBufferMgr(int numbuffs) {
       bufferpool = new Buffer[numbuffs];
       numAvailable = numbuffs;
       bufferPoolSize = numbuffs; //Edit
+      
+      //Removed
       /*
       for (int i=0; i<numbuffs; i++)
          bufferpool[i] = new Buffer();
       */
+      //Removed
    }
    
    /**
     * Flushes the dirty buffers modified by the specified transaction.
     * @param txnum the transaction's id number
+    * 
+    * edits
+    * To flush use the bufferPoolMap to check if a buffer has been modified
+    * @author Bijo Joseph
     */
    synchronized void flushAll(int txnum) {
+       
+       //Removed
        /*
       for (Buffer buff : bufferpool)
          if (buff.isModifiedBy(txnum))
          buff.flush();
       */
+       //Removed
+       
        //Edits
        for(Buffer buffer :bufferPoolMap.values()) {
            if(buffer.isModifiedBy(txnum)) {
              buffer.flush();            
            }
        }
-       //Edits
+       //End Edits
    }
    
    /**
@@ -64,18 +88,26 @@ class BasicBufferMgr {
     * Returns a null value if there are no available buffers.
     * @param blk a reference to a disk block
     * @return the pinned buffer
+    * 
+    * edits
+    * During pin chose buffer from free buffers, if possible
+    * else chose an unpinned buffer from bufferPoolMap
+    * @author Bijo Joseph
     */
    synchronized Buffer pin(Block blk) {
       Buffer buff = findExistingBuffer(blk);
       if (buff == null) {
          buff = chooseUnpinnedBuffer();
+         
+         //Removed
          /*
          if (buff == null)
             return null;
          buff.assignToBlock(blk);
          */
-         //Edit
+         //Removed
          
+         //Edit
          //Remove the buffer and clear the timestamps
          bufferPoolMap.remove(buff.block());
          buff.clearTimestamps();
@@ -91,7 +123,7 @@ class BasicBufferMgr {
           //Now put BUffer into buffer pool
           bufferPoolMap.put(blk, buff);
           return buff;
-         //End Edit
+         
       }
       else {
         if (!buff.isPinned())
@@ -104,7 +136,7 @@ class BasicBufferMgr {
         bufferPoolMap.put(blk, buffer);
         return buff;
       }
-      
+     //End Edit
    }
    
    /**
@@ -115,8 +147,14 @@ class BasicBufferMgr {
     * @param filename the name of the file
     * @param fmtr a pageformatter object, used to format the new block
     * @return the pinned buffer
+    * 
+    * edits
+    * Now use bufferPoolMap, also keep the info about time
+    * when it was pinned, for replacement.
+    * @author Bijo Joseph
     */
    synchronized Buffer pinNew(String filename, PageFormatter fmtr) throws BufferAbortException{
+      //Removed
       /*Buffer buff = chooseUnpinnedBuffer();
       if (buff == null)
          return null;
@@ -125,7 +163,7 @@ class BasicBufferMgr {
       buff.pin();
       return buff;
       */
-      
+      //Removed
       
       //Edit
       Buffer buff = chooseUnpinnedBuffer();
@@ -165,8 +203,17 @@ class BasicBufferMgr {
       return numAvailable;
    }
    
+   /**
+    * 
+    * @param blk
+    * @return buffer
+    * edits use bufferPoolMap to return the
+    * appropriate buffer for a block
+    * @author Pratyush Gupta
+    */
    private Buffer findExistingBuffer(Block blk) {
-       /*
+      //Removed
+      /*
       for (Buffer buff : bufferpool) {
          Block b = buff.block();
          if (b != null && b.equals(blk))
@@ -174,6 +221,8 @@ class BasicBufferMgr {
       }
       return null;
       */
+      //Removed
+       
      //Edit
      //Return the block requested, if it is present in the
      //buffer pool.
@@ -184,17 +233,29 @@ class BasicBufferMgr {
          Buffer buffer = bufferPoolMap.get(blk);         
          return buffer;
      }
+     //End Edit
    }
    
+   /**
+    * 
+    * @return
+    * @throws BufferAbortException when no buffer available
+    * edits
+    * Chose an unpinned buffer from the bufferpool map
+    * if unpinned buffers are available else throw Exception
+    * @author Mohit Satarkar
+    */
    private Buffer chooseUnpinnedBuffer() throws BufferAbortException{
        
       //To Do implement LRU(k) and LRU here
+      //Removed
       /*
       for (Buffer buff : bufferpool)
          if (!buff.isPinned())
          return buff;
       return null;
       */
+      //Removed
        
       //Edits
       if(numAvailable > 0) {
@@ -203,6 +264,7 @@ class BasicBufferMgr {
               return buffer;
           }
           else {
+            //Use LRU2 to chose unpinned buffer
             Buffer buffer = LRU2();
             return buffer;
           }
@@ -210,9 +272,23 @@ class BasicBufferMgr {
       else {
           throw new BufferAbortException();
       }
+      //End Edits
    }
    
+   /**
+    * 
+    * @return
+    * @throws BufferAbortException
+    * 
+    * edits
+    * the replacement algorithm LRU2
+    * the metric used for replacement is difference of second last pin time
+    * with current time
+    * @author Bijo Joseph
+    * 
+    */
    public Buffer LRU2() throws BufferAbortException{
+       //Edit
        int numInfinity = 0;
        int bufferInfoIndex = -1;
        List<Buffer> unpinnedBufferList = new ArrayList<Buffer>();
@@ -267,6 +343,7 @@ class BasicBufferMgr {
                return buffer;
            }
            
+           //Switch to LRU
            else {
                Buffer buffer = LRU(unpinnedBufferListWithLRU2Inf);
                return buffer;
@@ -275,13 +352,25 @@ class BasicBufferMgr {
        else {
            throw new BufferAbortException();
        }
+       //End Edit
    }
    
-   /*
-    * @bufferInfoIndex - index of buffer to be replaced
+   /**
     * 
+    * @param unpinnedBufferListWithLRU2Inf
+    * @return
+    * 
+    * edits
+    * 
+    * The algorithm switches to LRU when there is more than
+    * one buffer with LRU2 infinity
+    * So chose amongst those buffer the least recently
+    * used buffer
+    * @bufferInfoIndex - index of buffer to be replaced
+    * @author Bijo Joseph
     */
    private Buffer LRU(List<Buffer> unpinnedBufferListWithLRU2Inf) {
+       //Edit
        int bufferInfoIndex = -1;
        long maxLeastRecentTimeDifference = -1;
        //Chose the buffer that has the lowest timestamp
@@ -302,13 +391,18 @@ class BasicBufferMgr {
        }
        Buffer buffer = unpinnedBufferListWithLRU2Inf.get(bufferInfoIndex);       
        return buffer;
+       //End Edit
    }
    
-   /*
-    * Return the mapping of blk to buffer
-    * Used during testing to check if mapping
-    * is correct
-    */
+   
+    /**
+     * 
+     * @return  Return the mapping of blk to buffer
+     * Used during testing to check if mapping is correct
+     * A copy of the actual buffer pool is returned
+     * @author Bijo Joseph
+     * 
+     */
    public Map<Block, Buffer> getBufferPoolMap() {
        Map<Block, Buffer> bufferPool = new HashMap<Block,Buffer>();
        for (Map.Entry<Block, Buffer> e : bufferPoolMap.entrySet()) {
@@ -317,27 +411,36 @@ class BasicBufferMgr {
        return bufferPool;
    }
 
+   
+   /**
+    * Method is used during to clear buffer pool after every test case
+    * @author Mohit Satarkar
+    */
    public void clearBufferPoolMap() {
        bufferPoolMap.clear();
    }
 
    //Edit
-   /*
+   /**
     * Determines whether the map has a mapping
     * from the block to some buffer 
     * @param blk the block to use as key
     * @return true if there is a mapping
+    * @author Pratyush Gupta
     */
    public boolean containsMapping(Block blk) {
        return bufferPoolMap.containsKey(blk);
    }
+   //End Edits
    
-   /*
+   /**
     * Returns the buffer the map maps the
     * specified block to
     * @param blk the block to use as key
     * @return the buffer mapped to it otherwise null;
+    * @author Pratyush Gupta
     */
+   //Edits
    public Buffer getMapping(Block blk) {
        if(containsMapping(blk)) {
          return bufferPoolMap.get(blk);
