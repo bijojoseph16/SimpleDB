@@ -96,15 +96,8 @@ public class BufferTestLog {
         SimpleDB.logMgr();
 		/*Testing Logmanager*/
         Buffer lbuf = LogMgr.logBuffer;
-<<<<<<< HEAD
-        //test1(lbuf,buffMgr);
-        
-        //Writing new values will be appended in the logFile
-        test2(lbuf, buffMgr);
-=======
         
       //Writing new values will be appended in the logFile
->>>>>>> d1bfd4950266debcfb232736c029560089ec5972
         
         test1(lbuf,buffMgr);
         //test2(lbuf, buffMgr);
