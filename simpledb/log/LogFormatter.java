@@ -23,15 +23,11 @@ public class LogFormatter implements PageFormatter{
 	    * Each record slot is assigned a flag of EMPTY.
 	    * Each integer field is given a value of 0, and
 	    * each string field is given a value of "".
-	    * @see simpledb.buffer.PageFormatter#format(simpledb.file.Page)
+	    * @see simpledb.buffer.PageFormatter#format(simpledb.file.Page
+	    * @author neetishpathak 
 	    */
 	   public void format(Page page) {
-		   /*String testString = new String("abc");
-		   int recSize = STR_SIZE(testString.length());
-	      for (int pos=0; pos+recSize<=BLOCK_SIZE; pos += recSize) {
-	         //page.setInt(pos, EMPTY);
-	         page.setString(pos, testString);
-	      }*/
+		   //do nothing
 	   }
 
 }
