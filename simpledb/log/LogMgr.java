@@ -28,9 +28,10 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    private Page mypage = new Page();
    private Block currentblk;
    private int currentpos;
-   private Buffer logBuffer;
-   private int intLogTxNum = 0;
-
+  
+   // Added LogManager's Buffer
+   public static Buffer logBuffer;
+   
    /**
     * Creates the manager for the specified log file.
     * If the log file does not yet exist, it is created
@@ -43,6 +44,13 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * {@link simpledb.server.SimpleDB#initFileMgr(String)}
     * is called first.
     * @param logfile the name of the log file
+    * 
+    * 
+    * Edit
+    * A new buffer now should be allocated when LogMgr method is invoked
+    * this buffer reference is used to do read/write operations
+    * 
+    * @author neetishpathak
     */
    public LogMgr(String logfile) {
       this.logfile = logfile;
@@ -52,7 +60,8 @@ public class LogMgr implements Iterable<BasicLogRecord> {
          System.out.println("Log File Assigned New Buffer");
       }
    else {
-         /*currentblk = new Block(logfile, logsize-1);
+         /*
+         currentblk = new Block(logfile, logsize-1);
          mypage.read(currentblk);
          currentpos = getLastRecordPosition() + INT_SIZE;
          */
@@ -64,10 +73,6 @@ public class LogMgr implements Iterable<BasicLogRecord> {
          System.out.println("Log File Assigned a Buffer");
          
       }
-      
-      
-      /*Edit*/
-      
    }
 
    /**
@@ -75,10 +80,18 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * specified LSN has been written to disk.
     * All earlier log records will also be written to disk.
     * @param lsn the LSN of a log record
+    * 
+    * Edit 
+    * Since flush does not explicitly takes lsn and it is internally managed by the 
+    * logmgr about the location where the log needs to be updated, we can ignore it 
+    * for the time being 
+    * 
+    * @author neetishpathak
     */
-   public void flush(int lsn) {
-      if (lsn >= currentLSN())
-         flush();
+   public void flush(int lsn) { 
+      //if (lsn >= currentLSN())
+	   //Edit
+	   flush();
    }
 
    /**
@@ -99,6 +112,11 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * These integers allow log records to be read in reverse order.
     * @param rec the list of values
     * @return the LSN of the final value
+    *
+    *Edit: Append makes use of bufferMgr's unpin to manage the current buffer
+    *appendNewblock will assign a new block from the buffer pool
+    *
+    *@author neetish pathak
     */
    public synchronized int append(Object[] rec) {
       /*int recsize = INT_SIZE;  // 4 bytes for the integer that points to the previous log record
@@ -141,6 +159,10 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * Adds the specified value to the page at the position denoted by
     * currentpos.  Then increments currentpos by the size of the value.
     * @param val the integer or string to be added to the page
+    * 
+    * Edit
+    * appendVal now makes use of setString and setInt by retrieving the 
+    * page of the current buffer
     */
    private void appendVal(Object val) {
       /*if (val instanceof String)
@@ -150,13 +172,13 @@ public class LogMgr implements Iterable<BasicLogRecord> {
       currentpos += size(val);
       */
 	   
-      //Edit
-      if (val instanceof String)
-          logBuffer.setString(currentpos, (String)val, intLogTxNum, currentLSN());
-      
-       else
-          logBuffer.setInt(currentpos, (Integer)val, intLogTxNum, currentLSN());
-       currentpos += size(val);
+      //Edit       
+       if (val instanceof String)
+           logBuffer.contents.setString(currentpos, (String)val);
+       
+        else
+           logBuffer.contents.setInt(currentpos, (Integer)val);
+        currentpos += size(val);
    }
 
    /**
@@ -185,16 +207,26 @@ public class LogMgr implements Iterable<BasicLogRecord> {
 
    /**
     * Writes the current page to the log file.
+    * 
+    * Edit:
+    * Change the write functionality by not writing into the page
+    * and let the log_buffer be flushed
+    *  @author neetishpathak (npathak2)
     */
    private void flush() {
       //mypage.write(currentblk);
-
       //Edit
       logBuffer.flushLog();
    }
 
    /**
-    * Clear the current page, and append it to the log file.
+    * Clear the current page, and append it to the log file
+    * 
+    * Edit
+    * Changed the appendNewblock startegy to pin a new Buffer for the blocks in the log file
+    * using pinNew method to retrieve a new buffer from the buffer pool
+    * 
+    *  @author neetishpathak
     */
    private synchronized void appendNewBlock() {
       /*setLastRecordPosition(0);
@@ -202,7 +234,6 @@ public class LogMgr implements Iterable<BasicLogRecord> {
       currentblk = mypage.append(logfile);*/
       
       //Edit
-      
       LogFormatter lfm = new LogFormatter();
       logBuffer = SimpleDB.bufferMgr().pinNew(logfile, lfm);
       currentblk = logBuffer.block(); 
@@ -216,6 +247,11 @@ public class LogMgr implements Iterable<BasicLogRecord> {
     * whose value is the offset of the previous log record.
     * The first four bytes of the page contain an integer whose value
     * is the offset of the integer for the last log record in the page.
+    * 
+    * Edit
+    * Used logBuffer's setInt method to finalize a record 
+    * 
+    * @author neetishpathak
     */
    private void finalizeRecord() {
      /* mypage.setInt(currentpos, getLastRecordPosition());
@@ -223,21 +259,31 @@ public class LogMgr implements Iterable<BasicLogRecord> {
       currentpos += INT_SIZE;*/
       
       //Edit
-      logBuffer.setInt(currentpos, getLastRecordPosition(), intLogTxNum, currentLSN());
+      logBuffer.contents.setInt(currentpos, getLastRecordPosition());
       setLastRecordPosition(currentpos);
       currentpos += INT_SIZE;
       
    }
 
+   /*Edit
+    * getLastRecord now uses the getInt of the buffer class
+    * 
+    *  @author neetishpathak
+    * */
    private int getLastRecordPosition() {
       //return mypage.getInt(LAST_POS);
       //Edit
       return logBuffer.getInt(LAST_POS);
    }
 
+   /*Edit
+    * setLastRecordPosition now uses the setInt of the buffer class
+    * 
+    *  @author neetishpathak
+    * */
    private void setLastRecordPosition(int pos) {
       //mypage.setInt(LAST_POS, pos);
       //Edit
-      logBuffer.setInt(LAST_POS, pos, intLogTxNum, currentLSN());
+      logBuffer.contents.setInt(LAST_POS, pos);
    }
 }

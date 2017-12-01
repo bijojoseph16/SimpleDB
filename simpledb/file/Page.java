@@ -161,6 +161,12 @@ public class Page {
       contents.put(byteval);
    }
    
+   
+   /**
+    * Added the toString method to fetch the contents of the current Page 
+    * 
+    * @author neetishpathak
+    * */
    public String toString() {
 	      ByteBuffer contentsCopy = contents.duplicate();
 	      contentsCopy.rewind();

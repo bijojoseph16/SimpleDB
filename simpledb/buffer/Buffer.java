@@ -20,7 +20,8 @@ import simpledb.file.*;
  * @author Edward Sciore
  */
 public class Buffer {
-   private Page contents = new Page();
+   //private Page contents = new Page();
+   public Page contents = new Page(); //Make page public
    private Block blk = null;
    private int pins = 0;
    private int modifiedBy = -1;  // negative means not modified
@@ -81,18 +82,48 @@ public class Buffer {
     * @param val the new integer value to be written
     * @param txnum the id of the transaction performing the modification
     * @param lsn the LSN of the corresponding log record
+    * 
+    * 
+    *Edited
+    *setInt: Tests if the setInt request is coming from the logFile buffer
+    *and updates the logfile accordingly by calling the append function. 
+    *(The format for the values to be passed to the append function in LogMgr.java
+    *It should be consistent with how they were being written earlier in order for the 
+    *Recovery to work properly. So we use
+    *
+    *Object[] rec = new Object[]{SETINT, txnum, blk.fileName(),blk.number(), offset, val};;
+   	 SimpleDB.logMgr().append(rec);)
+    *
+    *Otherwise, the function does a normal write as applicable for other types of buffers 
+    *@author neetishpathak
     */
    public void setInt(int offset, int val, int txnum, int lsn) {
+      /*
       modifiedBy = txnum;
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setInt(offset, val);
+      */
+	   
+      //Edit
+	  int SETINT = 4; //copy from LogRecord.java to properly Update LogFiles
+      if(blk.fileName() == SimpleDB.LOG_FILE) {   	  	
+    	  		// append to the log buffer
+    	  		//Object[] rec = new Object[]{SETINT, val};;
+   	   		Object[] rec = new Object[]{SETINT, txnum, blk.fileName(),blk.number(), offset, val};;
+   	   		SimpleDB.logMgr().append(rec);
+   	   		
+   	   		//Flush the contents into the logfile
+   	   		SimpleDB.logMgr().flush(lsn);
+      }else {
+    	  		modifiedBy = txnum;
+    	  		if (lsn >= 0)
+    	  			logSequenceNumber = lsn;
+    	  		contents.setInt(offset, val);
+      }
+      
    }
-   
-   public void setInt(int offset, int val) {  
-	   modifiedBy = 100;
-	   contents.setInt(offset, val);
-   }
+
 
    /**
     * Writes a string to the specified offset of the
@@ -107,20 +138,45 @@ public class Buffer {
     * @param val the new string value to be written
     * @param txnum the id of the transaction performing the modification
     * @param lsn the LSN of the corresponding log record
+    * 
+    * 
+    *Edited
+    *setInt: Tests if the setString request is coming from the logFile buffer
+    *and updates the logfile accordingly by calling the append function. 
+    *(The format for the values to be passed to the append function in LogMgr.java
+    *It should be consistent with how they were being written earlier in order for the 
+    *Recovery to work properly. So we use
+    *Object[] rec = new Object[]{SETSTRING, txnum, blk.fileName(),blk.number(), offset, val};;
+   	 SimpleDB.logMgr().append(rec);)
+    *Otherwise, the function does a normal write as applicable for other types of buffers 
+    *@author neetishpathak
     */
    public void setString(int offset, String val, int txnum, int lsn) {
+      /*
       modifiedBy = txnum;
       if (lsn >= 0)
 	      logSequenceNumber = lsn;
       contents.setString(offset, val);
+       */
+	   
+      //Edit
+	  int SETSTRING = 5; //copy from LogRecord.java to properly Update LogFiles
+      if(blk.fileName() == SimpleDB.LOG_FILE) {   	  	
+    	  		//Also append to the log buffer
+    	  		//Object[] rec = new Object[]{SETSTRING, val};
+   	   		Object[] rec = new Object[]{SETSTRING, txnum, blk.fileName(),blk.number(), offset, val};
+   	   		SimpleDB.logMgr().append(rec);
+   	   		
+   	   		//Flush the contents into the logfile
+   	   		SimpleDB.logMgr().flush(lsn);
+      }else {
+      modifiedBy = txnum;
+	      if (lsn >= 0)
+		      logSequenceNumber = lsn;
+	      contents.setString(offset, val);
+      }
    }
    
-   //Overloaded setString
-   public void setString(int offset, String val) {  
-	   modifiedBy = 100;
-	   contents.setString(offset, val);
-   }
-
    /**
     * Returns a reference to the disk block
     * that the buffer is pinned to.
@@ -137,6 +193,9 @@ public class Buffer {
     * The method ensures that the corresponding log
     * record has been written to disk prior to writing
     * the page to disk.
+    * 
+    * Edit method to flush the logs
+    * @author neetishpathak
     */
    public void flushLog() {
 	   contents.write(blk);
@@ -254,6 +313,12 @@ public class Buffer {
        return timestamps;
    }
 
+   
+   /*
+    *toString function modification to view the contents of the buffer
+    * @author neetishpathak (npathak2)
+    * 
+    */
    public String toString() {
 	   return contents.toString();
 	   
