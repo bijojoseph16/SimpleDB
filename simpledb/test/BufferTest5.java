@@ -39,7 +39,7 @@ public class BufferTest5 {
         //a buffer then the newly added block is unpinned
         //so as per LRU2, this block will have infinite
         //LRU2 distance, and is removed.
-        //Make change in SimpleDB.java, BUFFER_SIZE = 8;
+        //Make change in SimpleDB.java, BUFFER_SIZE = 9;
         System.out.println("Create 10 Blocks");
         Block[] blocks = new Block[10];
         
@@ -250,7 +250,7 @@ public class BufferTest5 {
       private static void printBufferPool(BufferMgr basicBufferMgr) {
           int i = 0;
           for (Map.Entry<Block, Buffer> e : basicBufferMgr.getBufferPoolMap().entrySet()) {
-              System.out.println("\t" + (++i) + ": " + e.getKey().toString() + " = [" + e.getValue().toString() + "]\t");
+              System.out.println("\t" + (++i) + ": " + e.getKey().toString()+", Pin count:" +"["+e.getValue().getPinCount() +"]" + " = [" + e.getValue().toString() + "]\t");
           }
       }
 }

@@ -34,12 +34,12 @@ public class BufferTest7 {
         new SimpleDB();
         BufferMgr basicBufferMgr = SimpleDB.bufferMgr();
         
-        //Test Secanrio 3
-        //This is the test scenario given in the appendix
+        //Test Secanrio 7
+        //This is the test scenario given in moodle post
         //Algorithm should default to LRU as there are 2 buffers 
         //with infinite LRU2 distance
         //Only use 1 to 10
-       //Make change in SimpleDB.java, BUFFER_SIZE = 8;
+       //Make change in SimpleDB.java, BUFFER_SIZE = 9;
         System.out.println("Create 11 Blocks");
         Block[] blocks = new Block[11];
                  
@@ -146,7 +146,7 @@ public class BufferTest7 {
         
         basicBufferMgr.getBufferPoolMap().clear();
         //TODO: We also need to reset the numAvailable Flag here.
-        System.out.println("----------Buffer Test Scenario 3 Run Complete----------");
+        System.out.println("----------Buffer Test Scenario 7 Run Complete----------");
         
         
         System.out.println("TearDown");
@@ -158,7 +158,8 @@ public class BufferTest7 {
       private static void printBufferPool(BufferMgr basicBufferMgr) {
           int i = 0;
           for (Map.Entry<Block, Buffer> e : basicBufferMgr.getBufferPoolMap().entrySet()) {
-              System.out.println("\t" + (++i) + ": " + e.getKey().toString() + " = [" + e.getValue().toString() + "]\t");
+              System.out.println("\t" + (++i) + ": " + e.getKey().toString()+", Pin count:" +"["+e.getValue().getPinCount() +"]" + " = [" + e.getValue().toString() + "]\t");
           }
       }
+
 }
