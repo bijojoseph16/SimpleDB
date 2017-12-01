@@ -342,10 +342,8 @@ public class Buffer {
        }
        return timestamps;
    }
-<<<<<<< HEAD
    //End Edit
    
-=======
 
    
    /*
@@ -353,7 +351,6 @@ public class Buffer {
     * @author neetishpathak (npathak2)
     * 
     */
->>>>>>> 3964408d7e5ff41769bec42d106ae3e5bacf302c
    public String toString() {
 	   return contents.toString();
 	   
