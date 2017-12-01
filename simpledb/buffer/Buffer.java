@@ -123,7 +123,7 @@ public class Buffer {
 	  int SETINT = 4; //copy from LogRecord.java to properly Update LogFiles
       if(blk.fileName() == SimpleDB.LOG_FILE) {   	  	
     	  		// append to the log buffer
-    	  		//Object[] rec = new Object[]{SETINT, val};;
+    	  		//Object[] rec = new Object[]{SETINT, val};
    	   		Object[] rec = new Object[]{SETINT, txnum, blk.fileName(),blk.number(), offset, val};;
    	   		SimpleDB.logMgr().append(rec);
    	   		
